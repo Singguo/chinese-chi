@@ -1,17 +1,18 @@
-const LEGACY_BASE_URL = "https://ichec.icachi.org/25";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
-const LEGACY_PAGE_PATHS = {
-  home: "",
-  callforpapers: "callforpapers/",
-  attend: "attend/",
-  program: "program/",
-  workshops: "workshops/",
-  amalunch: "amalunch/",
-  committee: "committee/",
-  sponsorship: "sponsorship/",
+const LEGACY_PAGE_FILES = {
+  home: "home.html",
+  callforpapers: "callforpapers.html",
+  attend: "attend.html",
+  program: "program.html",
+  workshops: "workshops.html",
+  amalunch: "amalunch.html",
+  committee: "committee.html",
+  sponsorship: "sponsorship.html",
 } as const;
 
-export type LegacyPageKey = keyof typeof LEGACY_PAGE_PATHS;
+export type LegacyPageKey = keyof typeof LEGACY_PAGE_FILES;
 
 function extractMain(html: string): string {
   const match = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
@@ -51,29 +52,17 @@ function prependTodoComment(html: string, todoComment?: string): string {
 }
 
 export async function getLegacyMain(page: LegacyPageKey, todoComment?: string): Promise<string> {
-  const path = LEGACY_PAGE_PATHS[page];
-  const url = `${LEGACY_BASE_URL}/${path}`;
+  const fileName = LEGACY_PAGE_FILES[page];
+  const filePath = path.join(process.cwd(), "content", "legacy-25", fileName);
 
   try {
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-        Accept: "text/html",
-      },
-      next: { revalidate: 86400 },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Legacy page fetch failed: ${response.status}`);
-    }
-
-    const html = await response.text();
+    const html = await readFile(filePath, "utf8");
     const main = extractMain(html);
     const rewritten = rewriteLegacyLinks(main);
     return prependTodoComment(rewritten, todoComment);
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unknown error while fetching legacy HTML.";
-    return `<section class="container space-2"><div class="alert alert-soft-primary" role="alert">Unable to load ICHEC 2025 content. ${message}</div></section>`;
+      error instanceof Error ? error.message : "Unknown error while reading legacy HTML.";
+    return `<section class="container space-2"><div class="alert alert-soft-primary" role="alert">Unable to load local ICHEC 2025 content. ${message}</div></section>`;
   }
 }
