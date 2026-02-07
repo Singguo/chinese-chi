@@ -106,3 +106,28 @@ UPDATE profiles SET role = 'admin' WHERE id = '<user_uuid>';
 ## 7) 重要说明（下一步改造）
 
 当前仓库代码实现仍基于 Supabase（Auth/DB/Storage）。若你决定切换到 MySQL，需要把数据访问层、鉴权与文件上传下载的实现替换为 MySQL + 对象存储方案。
+
+## 8) ICHEC 2025 页面复刻（/25）
+
+### 完成内容
+
+- 在项目中新增 `/25` 路由体系，完整复刻以下页面：  
+  `/25/`、`/25/callforpapers/`、`/25/attend/`、`/25/program/`、`/25/workshops/`、`/25/amalunch/`、`/25/committee/`、`/25/sponsorship/`
+- 引入 ICHEC 2025 原站 HTML 片段（header/main/footer）并通过 React 组件渲染，保持结构与样式 1:1。
+- 增加 `/25` 专属 head 样式与脚本加载（Bootstrap/HS/等插件），并对资源路径做自动重写到原站域名以保证视觉一致。
+
+### 代码结构
+
+- `content/ichec-25/*.html`：抓取并保存的页面主体与公共 header/footer  
+- `src/app/25/*`：Next.js 页面与布局  
+- `src/lib/ichec25-content.ts`：HTML 读取与资源路径重写  
+- `src/components/Ichec25Html.tsx`、`Ichec25Scripts.tsx`：HTML 注入与脚本加载  
+- `src/components/LayoutShell.tsx`：在 `/25` 路由下禁用原站默认外框
+
+### 注意事项
+
+- 页面依赖原站 CSS/JS 资源（通过绝对地址加载），因此需要可访问 `https://ichec.icachi.org` 以保持 1:1 视觉效果。
+
+### 测试
+
+- 未运行自动化测试（本次为静态页面复刻）。
