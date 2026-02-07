@@ -24,3 +24,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.ichec-25-root {
+  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+}
