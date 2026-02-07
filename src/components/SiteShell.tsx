@@ -15,6 +15,7 @@ export function SiteShell({
 }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isLegacy26 = pathname.startsWith("/26");
   const topSegment = pathname.split("/")[1] || "";
   const titleMap: Record<string, string> = {
     about: "About ICHEC 2026",
@@ -32,6 +33,10 @@ export function SiteShell({
     auth: "Sign in",
   };
   const heroTitle = titleMap[topSegment] ?? "ICHEC 2026";
+
+  if (isLegacy26) {
+    return <div className="ichec-26-root">{children}</div>;
+  }
 
   return (
     <div className="relative min-h-dvh flex flex-col">
